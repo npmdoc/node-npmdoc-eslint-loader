@@ -1,0 +1,165 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/MoOx/eslint-loader#readme"
+
+    >eslint-loader (v1.7.1)</a>
+</h1>
+<h4>eslint loader (for webpack)</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.eslint-loader">module eslint-loader</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.eslint-loader.eslint-loader">
+            function <span class="apidocSignatureSpan"></span>eslint-loader
+            <span class="apidocSignatureSpan">(input, map)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.eslint-loader" id="apidoc.module.eslint-loader">module eslint-loader</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.eslint-loader.eslint-loader" id="apidoc.element.eslint-loader.eslint-loader">
+        function <span class="apidocSignatureSpan"></span>eslint-loader
+        <span class="apidocSignatureSpan">(input, map)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">eslint-loader = function (input, map) {
+  var webpack = this
+  var config = assign(
+    // loader defaults
+    {
+      formatter: require(&#x22;eslint/lib/formatters/stylish&#x22;),
+      cacheIdentifier: JSON.stringify({
+        &#x22;eslint-loader&#x22;: pkg.version,
+        eslint: eslint.version,
+      }),
+    },
+    // user defaults
+    this.options.eslint || {},
+    // loader query string
+    loaderUtils.getOptions(this)
+  )
+
+  var cacheDirectory = config.cache
+  var cacheIdentifier = config.cacheIdentifier
+
+  delete config.cacheDirectory
+  delete config.cacheIdentifier
+
+  // Create the engine only once per config
+  var configHash = objectHash(config)
+  if (!engines[configHash]) {
+    engines[configHash] = new eslint.CLIEngine(config)
+  }
+
+  this.cacheable()
+
+  var resourcePath = webpack.resourcePath
+  var cwd = process.cwd()
+
+  // remove cwd from resource path in case webpack has been started from project
+  // root, to allow having relative paths in .eslintignore
+  if (resourcePath.indexOf(cwd) === 0) {
+    resourcePath = resourcePath.substr(cwd.length + 1)
+  }
+
+  var engine = engines[configHash]
+  // return early if cached
+  if (config.cache) {
+    var callback = this.async()
+    return cache(
+      {
+        directory: cacheDirectory,
+        identifier: cacheIdentifier,
+        options: config,
+        source: input,
+        transform: function() {
+          return lint(engine, input, resourcePath)
+        },
+      },
+      function(err, res) {
+        if (err) {
+          return callback(err)
+        }
+        printLinterOutput(res || {}, config, webpack)
+        return callback(null, input, map)
+      }
+    )
+  }
+  printLinterOutput(lint(engine, input, resourcePath), config, this)
+  this.callback(null, input, map)
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
